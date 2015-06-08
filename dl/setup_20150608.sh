@@ -34,13 +34,13 @@ echo "source $HOME/synthesijer/synthesijer_env.csh"
 touch synthesijer_env_$VERSION.sh
 echo "export SYNTHESIJER=$HOME/synthesijer/synthesijer_$VERSION.jar" > synthesijer_env_$VERSION.sh
 echo "export SYNTHESIJER_LIB=$HOME/synthesijer/synthesijer_lib_$VERSION" >> synthesijer_env_$VERSION.sh
-echo "export SYNTHESIJER_EXTRA_LIBS=$HOME/synthesijer/synthesijer_extra-libs_$VERSION" >> synthesijer_env_$VERSION.sh
+echo "export SYNTHESIJER_EXTRA_LIB=$HOME/synthesijer/synthesijer_extra-libs_$VERSION" >> synthesijer_env_$VERSION.sh
 ln -sf synthesijer_env_$VERSION.sh synthesijer_env.sh
 
 touch synthesijer_env_$VERSION.csh
 echo "setenv SYNTHESIJER $HOME/synthesijer/synthesijer_$JAR_VERSION.jar" > synthesijer_env_$VERSION.csh
 echo "setenv SYNTHESIJER_LIB $HOME/synthesijer/synthesijer_lib_$VERSION" >> synthesijer_env_$VERSION.csh
-echo "setenv SYNTHESIJER_EXTRA_LIBS $HOME/synthesijer/synthesijer_extra-libs_$VERSION" >> synthesijer_env_$VERSION.csh
+echo "setenv SYNTHESIJER_EXTRA_LIB $HOME/synthesijer/synthesijer_extra-libs_$VERSION" >> synthesijer_env_$VERSION.csh
 ln -sf synthesijer_env_$VERSION.csh synthesijer_env.csh
 
 echo ""

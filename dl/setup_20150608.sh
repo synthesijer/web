@@ -6,6 +6,7 @@ VERSION=20150608
 BASE_URL=https://synthesijer.github.io/web/dl/
 
 download() {
+  echo "Download:" $1/$2
   curl -L $1/$2 -o $2
 }
 
@@ -16,10 +17,14 @@ download $BASE_URL synthesijer_$VERSION.jar
 download $BASE_URL synthesijer_lib_$VERSION.zip
 download $BASE_URL synthesijer_extra-libs_$VERSION.zip
 download $BASE_URL synthesijer_sample_$VERSION.zip
-echo "Extract libraries and samples"
+echo "Extract libraries and samples..."
 unzip -o synthesijer_lib_$VERSION.zip > /dev/null
 unzip -o synthesijer_extra-libs_$VERSION.zip > /dev/null
 unzip -o synthesijer_sample_$VERSION.zip > /dev/null
+echo "done"
+
+echo ""
+echo ""
 
 echo "Before using Synthesijer, please do"
 echo "source $HOME/synthesijer/synthesijer_env.sh"

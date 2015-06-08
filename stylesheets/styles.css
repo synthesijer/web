@@ -2,9 +2,9 @@
 
 body {
   padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font:16px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#777;
-  font-weight:300;
+  font-weight:400;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -60,7 +60,7 @@ blockquote {
 code, pre {
   font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
   color:#333;
-  font-size:12px;
+  font-size:14px;
 }
 
 pre {
@@ -101,6 +101,7 @@ header {
   position:fixed;
 }
 
+/*
 header ul {
   list-style:none;
   height:40px;
@@ -120,22 +121,31 @@ header ul {
   box-shadow:inset #fff 0 1px 0, inset rgba(0,0,0,0.03) 0 -1px 0;
   width:90px;
 }
+*/
 
 header li {
   width:89px;
   float:left;
 /*  border-right:1px solid #d2d2d2; */
-  height:40px;
+/*  height:40px; */
+}
+
+header p.link a{
+  line-height:1;
+  font-size:14px;
+  font-weight:700;
+  padding-left:20px;
 }
 
 header ul a {
-  line-height:1;
-  font-size:11px;
-  color:#999;
-  display:block;
-  text-align:center;
-  padding-top:6px;
-  height:40px;
+/*  line-height:1; */
+  font-size:14px;
+  font-weight:700;
+/*  color:#000; */
+/*  display:block; */
+/*  text-align:center; */
+/*  padding-top:6px; */
+/*  height:40px; */
 }
 
 strong {

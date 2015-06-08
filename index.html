@@ -18,7 +18,9 @@
         <h1>Synthesijer</h1>
         <p></p>
 
-        <p class="view"><a href="https://github.com/synthesijer/synthesijer">View the Project on GitHub <small>synthesijer/synthesijer</small></a></p>
+        <p class="view"><a href="https://github.com/synthesijer/synthesijer">Synthesijer</a></p>
+	<p class="view"><a href="https://github.com/synthesijer/extra-libs">Extra-libs</a></p>
+	<p class="view"><a href="https://github.com/synthesijer/synthesijer.scala">Synthesijer.Scala</a></p>
 
 <!--
         <ul><li><a href="https://github.com/synthesijer/web/zipball/master">Download <strong>ZIP File</strong></a></li></ul>
@@ -27,21 +29,179 @@
 -->
       </header>
       <section>
-        <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to Synthesijer.</h3>
+        <h2>
+<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to Synthesijer.</h2>
 
 <p>Synthesijer is a high-level synthesis tool, which generates VHDL and Verilog HDL code from Java code. Synthesijer also provides a backend to generate VHDL/Verilog HDL, which helps to develop high-level synthesis tools and DSLs.</p>
 
-	<p>
-	  <dl>
-	    <dt><a href="https://github.com/synthesijer/synthesijer">Synthesijer</a></dt>
-	    <dd>A main project</dd>
-	    <dt><a href="https://github.com/synthesijer/extra-libs">Extra-libs</a></dt>
-	    <dd>Extra libraris for synthesijer</dd>
-	    <dt><a href="https://github.com/synthesijer/synthesijer.scala">Synthesijer.Scala</a></dt>
-	    <dd>A DSL, which uses Syntheijser backend with Scala</dd>
-	  </dl>
-	</p>
+
+<h2>Quick Start</h2>
+
+<h3>Pre-Requirements</h3>
+<ul>
+  <li>Java SE 8</li>
+</ul>
+
+<h3>Download Synthesijer</h3>
+<!--
+Download synthesijer-20150511.jar from here.
+Synthesijer: 2.0.1
+
+Usage: java [-cp classpath] synthesijer.Main [options] sources
+
+Options:
+  -h, --help: print this help
+  --vhdl: output VHDL
+  --verilog: output Verilog HDL
+  (If you specify neither --vhdl nor --verilog, --vhdl is selected.)
+  --config=file: thespecified file is used for compiler settings
+  --no-optimize: do not apply any optimizations
+  --chaining: do operation chaining in qreedy manner
+  --operation-strength-reduction: do opeartion strength reduction
+  --ip-exact=TOP: generates a IP package template for "TOP" module
+  --vendor=name: to specify vendor id for generating a IP package
+  --libname=name: to specify library name for generating a IP package
+
+Please access to http://synthesijer.sorceforge.net/ for more information.
+Writing 1st Program
+
+This is a sample program to compile with Synthesijer.
+
+
+public class Test{
+  public boolean flag;
+  private int count;
+
+  public void run(){
+    while(true){
+      count++;
+      if(count > 5000000){
+	count = 0;
+	flag = !flag;
+      }
+    }
+  }
+}
+
+You can compile the sample code with Synthesijer as following:
+java -cp synthesijer-20150511.jar synthesijer.Main Test.java
+After compilation, "Test.vhd" should be generated. If you want to generate Verilog HDL code, please use --verilog option.
+java -cp synthesijer-20150511.jar synthesijer.Main --verilog Test.java
+Writing Top Module
+
+You should write a top module to instantiate the generated module. The entity of the generated HDL module is the following code.
+
+entity Test is
+  port (
+    clk : in std_logic;
+    reset : in std_logic;
+    flag_out : out std_logic;
+    flag_in : in std_logic;
+    flag_we : in std_logic;
+    run_req : in std_logic;
+    run_busy : out std_logic
+  );
+end Test;
+Unfortunately, top module cannot be written by pure Java program. You should use some annotations. The following code is a top module code for the above example.
+import synthesijer.rt.*;
+
+@synthesijerhdl
+public class Top{
+  private final Test test = new Test();
+
+  @auto
+  public boolean flag(){
+    return test.flag;
+  }
+
+  @auto
+  public void main(){
+    test.run();
+  }
+}
+To compile the example programs by the following command.
+java -cp synthesijer-20150511.jar synthesijer.Main Test.java Top.java
+You get four files "Test.vhd", "Top.vhd", "Test.v", and "Top.v" after the compilation. The generated files are synthesizable by existing tools, such as Xilinx ISE and QuartusII.
+Writing Pin Assignment Configuration File
+
+Generally, you have to write a configuration file for P&R tools (ex. "ucf", "xdc", or "qpf") to realize required mapping for your target board.
+The generated entity for the above example top module(Top.vhd) is
+
+entity Top is
+  port (
+    clk : in std_logic;
+    reset : in std_logic;
+    flag_return : out std_logic
+  );
+end Top;
+In this file, "flag_return" corresponds to the return value of "flag" method in Top.java. When you use Avnet Spartan-6 LX9 MicroBoard, the UCF file is as follow.
+NET reset       LOC = V4  | IOSTANDARD = LVCMOS33 | PULLDOWN;    # "USER_RESET"
+NET clk         LOC = C10 | IOSTANDARD = LVCMOS33;               # "CLOCK_Y3"
+NET flag_return LOC = P4  | IOSTANDARD = LVCMOS18;               # "GPIO_LED1"
+Synthesize, Place & Route, and Download
+
+As usual.
+Samples
+
+You can see some samples that are available here. This archive includes such as
+quickstart
+the above example code
+led
+yet another sample of blinking led
+sc1602
+printing characters onto SC1602, which is a famous charactor display
+serial_echo
+echo input characters via serial port with capitalization
+bf
+an interpreter of brainf**k.
+test
+miscellaneous test codes.
+You can build each of them with make command like the follwoing:
+SYNTHESIJER=~/Downloads/synthesijer-20150511.jar make 
+In samples, Synthesijer low-level HDL API is used to generate top module and timing dedicated modules. 
+Some samples and your writing codes with array require HDL libraries. Those are included in synthesijer-applications-yyyymmdd.zip and synthesijer_lib_yyyymmdd.zip, which are also available here. If you use bash-available environment, setup-yyyymmdd.sh is useful to download and setup synthesijer environment.
+Project Resources
+
+Project top
+BugTrack
+Development Milestones and Tickets
+ChangeLog
+
+2015.05.11
+
+synthesijer-20150511.jar
+bugfix for increment/decrement for an element of array
+2015.04.26
+
+synthesijer-20150426.jar
+support for "extends" (experimentally support)
+synthesijer-applications-20150426.zip
+AXIMemIface32RTL.java is added, which is an interface module to connect AXI-bus as master module, with supporting for burst data transfer.
+AXIMemIface32RTLTest.java is added, which is a sample to use AXIMemIface32RTL
+synthesijer_samples_20150426.zip
+Test012.java and Test013*.java, which are examples to use "extends", are added.
+synthesijer_lib_20150426.zip
+2015.03.11
+
+synthesijer-20150311.jar
+syntheissupport recursive call (experimentally support)
+synthesijer-applications-20150311.tar.gz
+AxiLiteSlave32RTL.java is added, which is an interface module to connect AXI-bus as slave module.
+ExternalMemory32.java is added, which is an interface module to connect a external BlockRAM.
+synthesijer_samples_20150311.zip
+Test011.java, which is an example of recursive call, is added.
+synthesijer_lib_20150311.zip
+License
+
+Synthesijer
+
+Copyright (C) 2014, 2015 Takefumi MIYOSHI
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+-->
 <!---
 <pre><code>$ cd your_repo_root/repo_name
 $ git fetch origin

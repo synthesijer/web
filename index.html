@@ -81,7 +81,7 @@ public class Test{
     public void run(){
         while(true){
             count++;
-            if(count > 5000000){
+            if(count &gt; 5000000){
                 count = 0;
                 flag = !flag;
             }
@@ -90,6 +90,179 @@ public class Test{
 }
 </code></pre>
 </p>
+<p>
+  You can compile the sample code with Synthesijer as following:
+</p>
+<p>
+  <pre><code>
+      java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java
+  </code></pre>
+</p>
+<p>
+  After compilation, "Test.vhd" should be generated. If you want to generate Verilog HDL code, please use --verilog option.
+<pre><code>
+java -cp synthesijer-20150511.jar synthesijer.Main --verilog Test.java
+</code></pre>
+</p>
+
+<h3>Writing Top Module</h3>
+
+<p>
+You should write a top module to instantiate the generated module. The entity of the generated HDL module is the following code.
+</p>
+
+<p>
+<pre><code>
+entity Test is
+    port (
+    clk : in std_logic;
+    reset : in std_logic;
+    flag_out : out std_logic;
+    flag_in : in std_logic;
+    flag_we : in std_logic;
+    run_req : in std_logic;
+    run_busy : out std_logic
+    );
+end Test;
+</code></pre>
+</p>
+
+<p>
+  Unfortunately, top module cannot be written by pure Java program. You should use some annotations. The following code is a top module code for the above example.
+</p>
+<p>
+<pre><code>
+import synthesijer.rt.*;
+
+@synthesijerhdl
+public class Top{
+    private final Test test = new Test();
+
+    @auto
+    public boolean flag(){
+        return test.flag;
+    }
+
+    @auto
+    public void main(){
+        test.run();
+    }
+}
+</code></pre>
+</p>
+
+<p>
+To compile the example programs by the following command.
+</p>
+<p>
+<pre><code>
+java -cp synthesijer-20150511.jar synthesijer.Main Test.java Top.java
+</code></pre>
+</p>
+<p>
+You get four files "Test.vhd", "Top.vhd", "Test.v", and "Top.v" after the compilation. The generated files are synthesizable by existing tools, such as Xilinx ISE and QuartusII.
+Writing Pin Assignment Configuration File
+
+Generally, you have to write a configuration file for P&R tools (ex. "ucf", "xdc", or "qpf") to realize required mapping for your target board.
+The generated entity for the above example top module(Top.vhd) is
+</p>
+
+<pre><code>
+entity Top is
+  port (
+    clk : in std_logic;
+    reset : in std_logic;
+    flag_return : out std_logic
+  );
+  end Top;
+</code></pre>
+<p>
+  In this file, "flag_return" corresponds to the return value of "flag" method in Top.java. When you use Avnet Spartan-6 LX9 MicroBoard, the UCF file is as follow.
+</p>
+<pre><code>
+NET reset       LOC = V4  | IOSTANDARD = LVCMOS33 | PULLDOWN;    # "USER_RESET"
+NET clk         LOC = C10 | IOSTANDARD = LVCMOS33;               # "CLOCK_Y3"
+NET flag_return LOC = P4  | IOSTANDARD = LVCMOS18;               # "GPIO_LED1"
+</code></pre>
+
+<h3>Synthesize, Place & Route, and Download</h3>
+<p>
+  As usual.
+</p>
+
+<h2>Samples</h2>
+<p>
+  You can see some samples that are available here. This archive includes such as
+</p>
+<dl>
+<dt>quickstart</dt>
+<dd>the above example code</dd>
+<dt>led</dt>
+<dd>yet another sample of blinking led</dd>
+<dt>sc1602</dt>
+<dd>printing characters onto SC1602, which is a famous charactor display</dd>
+<dt>serial_echo</dt>
+<dd>echo input characters via serial port with capitalization</dd>
+<dt>bf</dt>
+<dd>an interpreter of brainf**k.</dd>
+<dt>test</dt>
+<dd>miscellaneous test codes.</dd>
+</dl>
+<p>
+You can build each of them with make command like the follwoing:
+</p>
+<pre><code>
+    SYNTHESIJER=~/Downloads/synthesijer-20150511.jar make
+</code></pre>
+<p>
+In samples, Synthesijer low-level HDL API is used to generate top module and timing dedicated modules. 
+Some samples and your writing codes with array require HDL libraries. Those are included in synthesijer_extra-libs_yyyymmdd.zip and synthesijer_lib_yyyymmdd.zip, which are also available here. If you use bash-available environment, setup-yyyymmdd.sh is useful to download and setup synthesijer environment.
+</p>
+
+<h2>Project Resources</h2>
+
+<h2>License</h2>
+<p>Synthesijer</p>
+<p>
+Copyright (C) 2014, 2015 Takefumi MIYOSHI
+</p>
+<p>
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+</p>
+<p>
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+</p>
+
+
+	<!---
+	    <pre><code>$ cd your_repo_root/repo_name
+		$ git fetch origin
+		$ git checkout gh-pages
+	    </code></pre>
+
+	<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+
+	<h3>
+	  <a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+
+	<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+
+	<h3>
+	  <a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+
+	<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+
+	<h3>
+	  <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+	<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+
+	<h3>
+	  <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+	<p>Having trouble with Pages? Check out the documentation at <a href="https://help.github.com/pages">https://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+</section>
+--->
 	<footer>
           <p>This project is maintained by <a href="https://github.com/synthesijer">synthesijer</a></p>
           <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>

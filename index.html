@@ -73,7 +73,7 @@
 	</p>
 
 	<p>
-	<pre><code>
+	  <pre><code>
 public class Test{
     public boolean flag;
     private int count;
@@ -90,13 +90,13 @@ public class Test{
 }
 </code></pre>
 </p>
-	<p>
-	  You can compile the sample code with Synthesijer as following:
-	</p>
 <p>
-<pre><code>
-java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java
-</code></pre>
+  You can compile the sample code with Synthesijer as following:
+</p>
+<p>
+  <pre><code>
+      java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java
+  </code></pre>
 </p>
 <p>
   After compilation, "Test.vhd" should be generated. If you want to generate Verilog HDL code, please use --verilog option.
@@ -213,7 +213,7 @@ You can build each of them with make command like the follwoing:
 </p>
 <pre><code>
     SYNTHESIJER=~/Downloads/synthesijer-20150511.jar make
-</code></rep>
+</code></pre>
 <p>
 In samples, Synthesijer low-level HDL API is used to generate top module and timing dedicated modules. 
 Some samples and your writing codes with array require HDL libraries. Those are included in synthesijer_extra-libs_yyyymmdd.zip and synthesijer_lib_yyyymmdd.zip, which are also available here. If you use bash-available environment, setup-yyyymmdd.sh is useful to download and setup synthesijer environment.

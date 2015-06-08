@@ -107,7 +107,7 @@ java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java
 	<p>
 	  After compilation, "Test.vhd" should be generated. If you want to generate Verilog HDL code, please use --verilog option.
 	  <pre><code>
-java -cp synthesijer-20150511.jar synthesijer.Main --verilog Test.java
+java -cp synthesijer_yyyymmdd.jar synthesijer.Main --verilog Test.java
 	  </code></pre>
 	</p>
 
@@ -162,7 +162,7 @@ public class Top{
 	</p>
 	<p>
 	  <pre><code>
-java -cp synthesijer-20150511.jar synthesijer.Main Test.java Top.java
+java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java Top.java
 	  </code></pre>
 	</p>
 	<p>
@@ -218,7 +218,7 @@ NET flag_return LOC = P4  | IOSTANDARD = LVCMOS18;               # "GPIO_LED1"
 	  You can build each of them with make command like the follwoing:
 	</p>
 	<pre><code>
-	    SYNTHESIJER=~/Downloads/synthesijer-20150511.jar make
+	    SYNTHESIJER=~/Downloads/synthesijer_yyyymmdd.jar make
 	</code></pre>
 	<p>
 	  In samples, Synthesijer low-level HDL API is used to generate top module and timing dedicated modules. 

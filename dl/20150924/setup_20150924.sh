@@ -2,8 +2,8 @@
 
 #set +m
 
-VERSION=20150711
-BASE_URL=https://synthesijer.github.io/web/dl/20150711
+VERSION=20150924
+BASE_URL=https://synthesijer.github.io/web/dl/$VERSION
 
 download() {
   echo "Download:" $1/$2

@@ -6,24 +6,25 @@ rm -rf synthesijer
 rm -f synthesijer*.jar
 rm -f *.sha
 
-SYNTHESIJER=../synthesijer/bin/
 
 # synthesijer
 git clone git@github.com:synthesijer/synthesijer
 (cd synthesijer; ant clean jar)
-# synthesijer.scala
-git clone git@github.com:synthesijer/synthesijer.scala
-(cd synthesijer.scala; sbt compile)
-# synthesijer_yyyymmdd.jar
-(cd synthesijer/bin;
- cp -r ../../synthesijer.scala/target/scala-2.11/classes/synthesijer/scala synthesijer;
- jar cfm ../../synthesijer_$1.jar ../etc/manifest.mf *)
 
 # extra-libs
 git clone git@github.com:synthesijer/extra-libs
 mv extra-libs synthesijer_extra-libs_$1
-(cd synthesijer_extra-libs_$1; ant -f build.xml; make -f Makefile.cygwin)
-zip -r synthesijer_extra-libs_20151102.zip synthesijer_extra-libs_20151102/*
+(cd synthesijer_extra-libs_$1; SYNTHESIJER=../synthesijer/bin ant -f build.xml; SYNTHESIJER=../synthesijer/bin make -f Makefile.cygwin)
+zip -r synthesijer_extra-libs_$1.zip synthesijer_extra-libs_$1/*
+
+# synthesijer.scala
+git clone git@github.com:synthesijer/synthesijer.scala
+(cd synthesijer.scala; SYNTHESIJER=../synthesijer/bin SYNTHESIJER_EXTRA_LIB=../synthesijer_extra-libs_$1/bin sbt compile)
+
+# synthesijer_yyyymmdd.jar
+(cd synthesijer/bin;
+ cp -r ../../synthesijer.scala/target/scala-2.11/classes/synthesijer/scala synthesijer;
+ jar cfm ../../synthesijer_$1.jar ../etc/manifest.mf *)
 
 # samples
 cp -r synthesijer/sample synthesijer_sample_$1

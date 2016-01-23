@@ -14,7 +14,7 @@ git clone git@github.com:synthesijer/synthesijer
 # extra-libs
 git clone git@github.com:synthesijer/extra-libs
 mv extra-libs synthesijer_extra-libs_$1
-(cd synthesijer_extra-libs_$1; SYNTHESIJER=../synthesijer/bin ant -f build.xml; SYNTHESIJER=../synthesijer/bin make -f Makefile.cygwin)
+(cd synthesijer_extra-libs_$1; SYNTHESIJER=../synthesijer/bin ant -f build.xml; SYNTHESIJER=../synthesijer/bin make -f Makefile)
 zip -r synthesijer_extra-libs_$1.zip synthesijer_extra-libs_$1/*
 
 # synthesijer.scala

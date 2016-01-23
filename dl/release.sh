@@ -39,3 +39,6 @@ for i in synthesijer_$1.jar *.zip
 do
 	sha512sum $i > $i.sha
 done
+
+rm -rf synthesijer_sample_$1 synthesijer_lib_$1 synthesijer_extra-libs_$1 synthesijer.scala
+rm -rf synthesijer

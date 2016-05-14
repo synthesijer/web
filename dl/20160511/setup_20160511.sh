@@ -21,6 +21,7 @@ echo "Extract libraries and samples..."
 unzip -o synthesijer_lib_$VERSION.zip > /dev/null
 unzip -o synthesijer_extra-libs_$VERSION.zip > /dev/null
 unzip -o synthesijer_sample_$VERSION.zip > /dev/null
+ln -sf synthesijer_lib_$VERSION lib
 echo "done"
 
 echo ""

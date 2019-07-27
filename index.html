@@ -41,22 +41,37 @@
 
 	<h2>Quick Start</h2>
 
-	<h3>Pre-Requirements</h3>
+        <h3>Install by Snap</h3>
+        <p>
+        <pre>
+        snap install --edge synthesijer
+        </pre>
+        </p>
+	<h3>Manual setup</h3>
+	<h4>Pre-Requirements</h4>
 	<p>
 	<ul>
-	  <li>Java SE 8</li>
+	  <li>Java SE 11</li>
 	</ul>
 	</p>
 
-	<h3>Download Synthesijer</h3>
+	<h4>Download Synthesijer</h4>
 	<p>
 	Download Synthesijer <a href="dl">here</a>.
 	</p>
 
+        <h3>Usage</h3>
 	<p>
+        <h4>Command (installed with snap)</h4>
 	<pre><code>
-    Usage: java [-cp classpath] synthesijer.Main [options] sources
-    Options:
+    $ synthesijer [options] java-source-files
+	</code></pre>
+        <h4>Command (installed mannually)</h4>
+	<pre><code>
+    $ java -jar synthesijer [options] java-source-files
+	</code></pre>
+        <h4>Options</h4>
+	<pre><code>
     -h, --help: print this help
     --vhdl: output VHDL
     --verilog: output Verilog HDL
@@ -99,7 +114,7 @@ public class Test{
 	</p>
 	<p>
 	  <pre><code>
-java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java
+java -jar synthesijer.jar synthesijer.Main Test.java
 	  </code></pre>
 	</p>
 	<p>

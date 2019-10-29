@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Synthesijer</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <p></p>
+	<a class="button" href="dl/index.html" target="_new">Download</a>
+	<h4>Projects</h4>
+	  <ul>
+            <li><a href="https://github.com/synthesijer/synthesijer">Synthesijer</a></li>
+	    <li><a href="https://github.com/synthesijer/extra-libs">Extra-libs</a></li>
+	    <li><a href="https://github.com/synthesijer/synthesijer.scala">Synthesijer.Scala</a></li>
+	  </ul>
+
+	<!--
+            <ul><li><a href="https://github.com/synthesijer/web/zipball/master">Download <strong>ZIP File</strong></a></li></ul>
+	    <ul><li><a href="https://github.com/synthesijer/web/tarball/master">Download <strong>TAR Ball</strong></a></li></ul>
+            <ul><li><a href="https://github.com/synthesijer/web">View On <strong>GitHub</strong></a></li></ul>
+	    -->
+      </header>
+      <section>
+	<div align="center"><img src="images/synthesijer_logo_28pt.png" alt="Synthesijer"/></div>
+<!--        <h2>
+	  <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>About Synthesijer</h2> -->
+
+	<p>Synthesijer is a high-level synthesis tool, which generates VHDL and Verilog HDL code from Java code. Synthesijer also provides a backend to generate VHDL/Verilog HDL, which helps to develop high-level synthesis tools and DSLs.</p>
+	<br>
+
+
+	<h2>Quick Start</h2>
+
+        <h3>Install by Snap</h3>
+        <p>
+        <pre><code>
+    $ snap install --edge synthesijer
+        </code></pre>
+        </p>
+	<h3>Manual setup</h3>
+	<h4>Pre-Requirements</h4>
+	<p>
+	<ul>
+	  <li>Java SE 11</li>
+	</ul>
+	</p>
+
+	<h4>Download Synthesijer</h4>
+	<p>
+	Download Synthesijer <a href="dl">here</a>.
+	</p>
+
+        <h3>Usage</h3>
+	<p>
+        <h4>Command (installed with snap)</h4>
+	<pre><code>
+    $ synthesijer [options] java-source-files
+	</code></pre>
+        <h4>Command (installed mannually)</h4>
+	<pre><code>
+    $ java -jar synthesijer_yyyymmdd [options] java-source-files
+	</code></pre>
+        <h4>Options</h4>
+	<pre><code>
+    -h, --help: print this help
+    --vhdl: output VHDL
+    --verilog: output Verilog HDL
+    (If you specify neither --vhdl nor --verilog, --vhdl is selected.)
+    --config=file: thespecified file is used for compiler settings
+    --no-optimize: do not apply any optimizations
+    --chaining: do operation chaining in qreedy manner
+    --operation-strength-reduction: do opeartion strength reduction
+    --ip-exact=TOP: generates a IP package template for "TOP" module
+    --vendor=name: to specify vendor id for generating a IP package
+    --libname=name: to specify library name for generating a IP package
+	</code></pre>
+	</p>
+
+	<h3>Writing 1st Program</h3>
+	<p>
+	  This is a sample program to compile with Synthesijer.
+	</p>
+
+	<p>
+	  <pre><code>
+public class Test{
+    public boolean flag;
+    private int count;
+
+    public void run(){
+        while(true){
+            count++;
+            if(count &gt; 5000000){
+                count = 0;
+                flag = !flag;
+            }
+        }
+    }
+}
+	  </code></pre>
+	</p>
+	<p>
+	  You can compile the sample code with Synthesijer as following:
+	</p>
+	<p>
+	  <pre><code>
+java -jar synthesijer.jar synthesijer.Main Test.java
+	  </code></pre>
+	</p>
+	<p>
+	  After compilation, "Test.vhd" should be generated. If you want to generate Verilog HDL code, please use --verilog option.
+	  <pre><code>
+java -cp synthesijer_yyyymmdd.jar synthesijer.Main --verilog Test.java
+	  </code></pre>
+	</p>
+
+	<h3>Writing Top Module</h3>
+
+	<p>
+	  You should write a top module to instantiate the generated module. The entity of the generated HDL module is the following code.
+	</p>
+
+	<p>
+	  <pre><code>
+entity Test is
+  port (
+    clk : in std_logic;
+    reset : in std_logic;
+    flag_out : out std_logic;
+    flag_in : in std_logic;
+    flag_we : in std_logic;
+    run_req : in std_logic;
+    run_busy : out std_logic
+  );
+end Test;
+	  </code></pre>
+	</p>
+
+	<p>
+	  Unfortunately, top module cannot be written by pure Java program. You should use some annotations. The following code is a top module code for the above example.
+	</p>
+	<p>
+	  <pre><code>
+import synthesijer.rt.*;
+
+@synthesijerhdl
+public class Top{
+    private final Test test = new Test();
+
+    @auto
+    public boolean flag(){
+        return test.flag;
+    }
+
+    @auto
+    public void main(){
+        test.run();
+    }
+}
+	  </code></pre>
+	</p>
+
+	<p>
+	  To compile the example programs by the following command.
+	</p>
+	<p>
+	  <pre><code>
+java -cp synthesijer_yyyymmdd.jar synthesijer.Main Test.java Top.java
+	  </code></pre>
+	</p>
+	<p>
+	  You get four files "Test.vhd", "Top.vhd", "Test.v", and "Top.v" after the compilation. The generated files are synthesizable by existing tools, such as Xilinx ISE and QuartusII.
+	  Writing Pin Assignment Configuration File
+
+	  Generally, you have to write a configuration file for P&R tools (ex. "ucf", "xdc", or "qpf") to realize required mapping for your target board.
+	  The generated entity for the above example top module(Top.vhd) is
+	</p>
+
+	<pre><code>
+entity Top is
+  port (
+    clk : in std_logic;
+    reset : in std_logic;
+    flag_return : out std_logic
+  );
+end Top;
+	</code></pre>
+	<p>
+	  In this file, "flag_return" corresponds to the return value of "flag" method in Top.java. When you use Avnet Spartan-6 LX9 MicroBoard, the UCF file is as follow.
+	</p>
+	<pre><code>
+NET reset       LOC = V4  | IOSTANDARD = LVCMOS33 | PULLDOWN;    # "USER_RESET"
+NET clk         LOC = C10 | IOSTANDARD = LVCMOS33;               # "CLOCK_Y3"
+NET flag_return LOC = P4  | IOSTANDARD = LVCMOS18;               # "GPIO_LED1"
+	</code></pre>
+
+	<h3>Synthesize, Place & Route, and Download</h3>
+	<p>
+	  As usual.
+	</p>
+
+	<h2>Samples</h2>
+	<p>
+	  You can see some samples that are available here. This archive includes such as
+	</p>
+	<dl>
+	  <dt>quickstart</dt>
+	  <dd>the above example code</dd>
+	  <dt>led</dt>
+	  <dd>yet another sample of blinking led</dd>
+	  <dt>sc1602</dt>
+	  <dd>printing characters onto SC1602, which is a famous charactor display</dd>
+	  <dt>serial_echo</dt>
+	  <dd>echo input characters via serial port with capitalization</dd>
+	  <dt>bf</dt>
+	  <dd>an interpreter of brainf**k.</dd>
+	  <dt>test</dt>
+	  <dd>miscellaneous test codes.</dd>
+	</dl>
+	<p>
+	  You can build each of them with make command like the follwoing:
+	</p>
+	<pre><code>
+SYNTHESIJER=~/Downloads/synthesijer_yyyymmdd.jar make
+	</code></pre>
+	<p>
+	  In samples, Synthesijer low-level HDL API is used to generate top module and timing dedicated modules. 
+	  Some samples and your writing codes with array require HDL libraries. Those are included in synthesijer_extra-libs_yyyymmdd.zip and synthesijer_lib_yyyymmdd.zip, which are also available here. If you use bash-available environment, setup-yyyymmdd.sh is useful to download and setup synthesijer environment.
+	</p>
+
+	<h2>Project Resources</h2>
+
+	<h2>License</h2>
+	<p>Synthesijer</p>
+	<p>
+	  Copyright (C) 2014, 2015, 2016 Takefumi MIYOSHI
+	</p>
+	
+	<p>
+	  This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	</p>
+	
+	<p>
+	  You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+	</p>
+
+	</section>
+
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/synthesijer">synthesijer</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
